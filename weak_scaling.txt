@@ -1,0 +1,196 @@
+N_Dimension: 500
+N_Threads: 1
+Time -- elapsed: 1.20321
+------------------------------------
+N_Dimension: 500
+N_Threads: 2
+Time -- elapsed: 0.75635
+------------------------------------
+N_Dimension: 500
+N_Threads: 4
+Time -- elapsed: 0.62305
+------------------------------------
+N_Dimension: 500
+N_Threads: 8
+Time -- elapsed: 0.77873
+------------------------------------
+N_Dimension: 500
+N_Threads: 16
+Time -- elapsed: 1.01364
+------------------------------------
+N_Dimension: 500
+N_Threads: 32
+Time -- elapsed: 1.30851
+------------------------------------
+N_Dimension: 500
+N_Threads: 64
+Time -- elapsed: 2.03356
+------------------------------------
+N_Dimension: 1000
+N_Threads: 1
+Time -- elapsed: 9.73181
+------------------------------------
+N_Dimension: 1000
+N_Threads: 2
+Time -- elapsed: 5.31618
+------------------------------------
+N_Dimension: 1000
+N_Threads: 4
+Time -- elapsed: 4.66866
+------------------------------------
+N_Dimension: 1000
+N_Threads: 8
+Time -- elapsed: 5.97572
+------------------------------------
+N_Dimension: 1000
+N_Threads: 16
+Time -- elapsed: 5.20906
+------------------------------------
+N_Dimension: 1000
+N_Threads: 32
+Time -- elapsed: 6.64351
+------------------------------------
+N_Dimension: 1000
+N_Threads: 64
+Time -- elapsed: 7.75238
+------------------------------------
+N_Dimension: 2000
+N_Threads: 1
+Time -- elapsed: 71.91449
+------------------------------------
+N_Dimension: 2000
+N_Threads: 2
+Time -- elapsed: 38.74901
+------------------------------------
+N_Dimension: 2000
+N_Threads: 4
+Time -- elapsed: 35.88454
+------------------------------------
+N_Dimension: 2000
+N_Threads: 8
+Time -- elapsed: 38.18606
+------------------------------------
+N_Dimension: 2000
+N_Threads: 16
+Time -- elapsed: 38.94682
+------------------------------------
+N_Dimension: 2000
+N_Threads: 32
+Time -- elapsed: 40.09959
+------------------------------------
+N_Dimension: 2000
+N_Threads: 64
+Time -- elapsed: 43.42272
+------------------------------------
+N_Dimension: 3000
+N_Threads: 1
+Time -- elapsed: 228.07297
+------------------------------------
+N_Dimension: 3000
+N_Threads: 2
+Time -- elapsed: 124.44515
+------------------------------------
+N_Dimension: 3000
+N_Threads: 4
+Time -- elapsed: 115.93783
+------------------------------------
+N_Dimension: 3000
+N_Threads: 8
+Time -- elapsed: 121.36709
+------------------------------------
+N_Dimension: 3000
+N_Threads: 16
+Time -- elapsed: 119.50104
+------------------------------------
+N_Dimension: 3000
+N_Threads: 32
+Time -- elapsed: 121.72322
+------------------------------------
+N_Dimension: 3000
+N_Threads: 64
+Time -- elapsed: 127.62453
+------------------------------------
+N_Dimension: 4000
+N_Threads: 1
+Time -- elapsed: 530.41616
+------------------------------------
+N_Dimension: 4000
+N_Threads: 2
+Time -- elapsed: 280.25995
+------------------------------------
+N_Dimension: 4000
+N_Threads: 4
+Time -- elapsed: 264.38530
+------------------------------------
+N_Dimension: 4000
+N_Threads: 8
+Time -- elapsed: 273.01334
+------------------------------------
+N_Dimension: 4000
+N_Threads: 16
+Time -- elapsed: 271.05800
+------------------------------------
+N_Dimension: 4000
+N_Threads: 32
+Time -- elapsed: 272.29612
+------------------------------------
+N_Dimension: 4000
+N_Threads: 64
+Time -- elapsed: 274.04530
+------------------------------------
+N_Dimension: 0
+N_Threads: 1
+Time -- elapsed: 0.00005
+------------------------------------
+N_Dimension: 0
+N_Threads: 2
+Time -- elapsed: 0.00072
+------------------------------------
+N_Dimension: 0
+N_Threads: 4
+Time -- elapsed: 0.00026
+------------------------------------
+N_Dimension: 0
+N_Threads: 8
+Time -- elapsed: 0.00041
+------------------------------------
+N_Dimension: 0
+N_Threads: 16
+Time -- elapsed: 0.00047
+------------------------------------
+N_Dimension: 0
+N_Threads: 32
+Time -- elapsed: 0.00092
+------------------------------------
+N_Dimension: 0
+N_Threads: 64
+Time -- elapsed: 0.00177
+------------------------------------
+N_Dimension: 0
+N_Threads: 1
+Time -- elapsed: 0.00005
+------------------------------------
+N_Dimension: 0
+N_Threads: 2
+Time -- elapsed: 0.00019
+------------------------------------
+N_Dimension: 0
+N_Threads: 4
+Time -- elapsed: 0.00402
+------------------------------------
+N_Dimension: 0
+N_Threads: 8
+Time -- elapsed: 0.01577
+------------------------------------
+N_Dimension: 0
+N_Threads: 16
+Time -- elapsed: 0.00049
+------------------------------------
+N_Dimension: 0
+N_Threads: 32
+Time -- elapsed: 0.00081
+------------------------------------
+N_Dimension: 0
+N_Threads: 64
+Time -- elapsed: 0.00183
+------------------------------------

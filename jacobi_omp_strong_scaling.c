@@ -23,11 +23,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <omp.h>
 
 static int N;
 static int MAX_ITERATIONS;
 static int SEED;
 static double CONVERGENCE_THRESHOLD;
+
 
 #define SEPARATOR "------------------------------------\n"
 
@@ -39,7 +41,7 @@ void parse_arguments(int argc, char *argv[]);
 
 // Run the Jacobi solver
 // Returns the number of iterations performed
-int run(double *A, double *b, double *x, double *xtmp)
+int run(double *A, double *b, double *x, double *xtmp,int n_threads)
 {
   int itr;
   int row, col;
@@ -47,33 +49,37 @@ int run(double *A, double *b, double *x, double *xtmp)
   double diff;
   double sqdiff;
   double *ptrtmp;
-
+  
   // Loop until converged or maximum iterations reached
   itr = 0;
   do
   {
     // Perfom Jacobi iteration
+    #pragma omp parallel for num_threads(n_threads) private(col, dot) shared(A, x, b, xtmp, N) 
     for (row = 0; row < N; row++)
     {
       dot = 0.0;
       for (col = 0; col < N; col++)
       {
         if (row != col)
-          dot += A[row + col*N] * x[col];
+          dot += A[col + row * N] * x[col];
       }
-      xtmp[row] = (b[row] - dot) / A[row + row*N];
+      xtmp[row] = (b[row] - dot) / A[row + row * N];
     }
 
     // Swap pointers
-    ptrtmp = x;
-    x      = xtmp;
-    xtmp   = ptrtmp;
+    #pragma omp single
+    {
+      ptrtmp = x;
+      x = xtmp;
+      xtmp = ptrtmp;
+    }
 
-    // Check for convergence
     sqdiff = 0.0;
+    #pragma omp parallel for num_threads(n_threads) reduction(+:sqdiff) private(diff) shared(x, xtmp, N)
     for (row = 0; row < N; row++)
     {
-      diff    = xtmp[row] - x[row];
+      diff = xtmp[row] - x[row];
       sqdiff += diff * diff;
     }
 
@@ -87,69 +93,91 @@ int main(int argc, char *argv[])
 {
   parse_arguments(argc, argv);
 
-  double *A    = malloc(N*N*sizeof(double));
-  double *b    = malloc(N*sizeof(double));
-  double *x    = malloc(N*sizeof(double));
-  double *xtmp = malloc(N*sizeof(double));
 
-  printf(SEPARATOR);
-  printf("Matrix size:            %dx%d\n", N, N);
-  printf("Maximum iterations:     %d\n", MAX_ITERATIONS);
-  printf("Convergence threshold:  %lf\n", CONVERGENCE_THRESHOLD);
-  printf(SEPARATOR);
+  FILE *file = fopen("strong_scaling.txt","a");
 
-  double total_start = get_timestamp();
-
-  // Initialize data
-  srand(SEED);
-  for (int row = 0; row < N; row++)
+  int n_threads[7] = {1,2,4,8,16,32,64};
+  
+  for (int th = 0; th < 7; th++)
   {
-    double rowsum = 0.0;
-    for (int col = 0; col < N; col++)
+
+    double *A = malloc(N * N * sizeof(double));
+    double *b = malloc(N * sizeof(double));
+    double *x = malloc(N * sizeof(double));
+    double *xtmp = malloc(N * sizeof(double));
+
+    double start_time = omp_get_wtime();
+
+    printf(SEPARATOR);
+    printf("Matrix size:            %dx%d\n", N, N);
+    printf("Maximum iterations:     %d\n", MAX_ITERATIONS);
+    printf("Convergence threshold:  %lf\n", CONVERGENCE_THRESHOLD);
+    printf(SEPARATOR);
+
+    double total_start = get_timestamp();
+
+    // Initialize data
+    srand(SEED);
+    #pragma omp parallel for num_threads(n_threads[th]) shared(A, x, N)
+    for (int row = 0; row < N; row++)
     {
-      double value = rand()/(double)RAND_MAX;
-      A[row + col*N] = value;
-      rowsum += value;
+      double rowsum = 0.0;
+      for (int col = 0; col < N; col++)
+      {
+        double value = rand() / (double)RAND_MAX;
+        A[col + row * N] = value;
+        rowsum += value;
+      }
+      A[row + row * N] += rowsum;
+      b[row] = rand() / (double)RAND_MAX;
+      x[row] = 0.0;
     }
-    A[row + row*N] += rowsum;
-    b[row] = rand()/(double)RAND_MAX;
-    x[row] = 0.0;
+
+    // Run Jacobi solver
+    
+    //double solve_start = get_timestamp();
+  
+    int itr = run(A, b, x, xtmp, n_threads[th]);
+    //double solve_end = get_timestamp();
+
+    // Check error of final solution
+    double err = 0.0;
+    for (int row = 0; row < N; row++)
+    {
+      double tmp = 0.0;
+      for (int col = 0; col < N; col++)
+      {
+        tmp += A[col + row * N] * x[col];
+      }
+      tmp = b[row] - tmp;
+      err += tmp * tmp;
+    }
+    err = sqrt(err);
+
+    double end_time = omp_get_wtime();
+    double elapsed = end_time - start_time;
+
+    fprintf(file,"N_Threads: %d\n",n_threads[th]);
+    fprintf(file,"Time -- elapsed: %.5lf\n",elapsed);
+    fprintf(file,SEPARATOR);
+
+    //double total_end = get_timestamp();
+
+    printf("Solution error = %lf\n", err);
+    printf("Iterations     = %d\n", itr);
+    //printf("Total runtime  = %lf seconds\n", (total_end - total_start));
+    //printf("Solver runtime = %lf seconds\n", (solve_end - solve_start));
+    if (itr == MAX_ITERATIONS)
+      printf("WARNING: solution did not converge\n");
+    printf(SEPARATOR);
+
+    free(A);
+    free(b);
+    free(x);
+    free(xtmp);
   }
 
-  // Run Jacobi solver
-  double solve_start = get_timestamp();
-  int itr = run(A, b, x, xtmp);
-  double solve_end = get_timestamp();
-
-  // Check error of final solution
-  double err = 0.0;
-  for (int row = 0; row < N; row++)
-  {
-    double tmp = 0.0;
-    for (int col = 0; col < N; col++)
-    {
-      tmp += A[row + col*N] * x[col];
-    }
-    tmp = b[row] - tmp;
-    err += tmp*tmp;
-  }
-  err = sqrt(err);
-
-  double total_end = get_timestamp();
-
-  printf("Solution error = %lf\n", err);
-  printf("Iterations     = %d\n", itr);
-  printf("Total runtime  = %lf seconds\n", (total_end-total_start));
-  printf("Solver runtime = %lf seconds\n", (solve_end-solve_start));
-  if (itr == MAX_ITERATIONS)
-    printf("WARNING: solution did not converge\n");
-  printf(SEPARATOR);
-
-  free(A);
-  free(b);
-  free(x);
-  free(xtmp);
-
+  
   return 0;
 }
 
@@ -157,7 +185,7 @@ double get_timestamp()
 {
   struct timeval tv;
   gettimeofday(&tv, NULL);
-  return tv.tv_sec + tv.tv_usec*1e-6;
+  return tv.tv_sec + tv.tv_usec * 1e-6;
 }
 
 int parse_int(const char *str)
